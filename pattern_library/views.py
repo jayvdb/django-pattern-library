@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.loader import get_template
 from django.utils.html import escape
 from django.views.generic.base import TemplateView
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from pattern_library import get_pattern_base_template_name, get_pattern_types
 from pattern_library.exceptions import (
@@ -17,7 +18,7 @@ from pattern_library.utils import (
 class IndexView(TemplateView):
     http_method_names = ('get', )
     template_name = 'pattern_library/index.html'
-
+    
     def get_first_template(self, templates):
         for pattern_type in templates:
             pattern_groups = templates[pattern_type]
@@ -31,6 +32,7 @@ class IndexView(TemplateView):
             % get_pattern_template_dir()
         )
 
+    @xframe_options_sameorigin
     def get(self, request, pattern_template_name=None):
         # Get all pattern templates
         available_pattern_types = get_pattern_types()
@@ -58,6 +60,7 @@ class RenderPatternView(TemplateView):
     http_method_names = ('get',)
     template_name = get_pattern_base_template_name()
 
+    @xframe_options_sameorigin
     def get(self, request, pattern_template_name=None):
         try:
             rendered_pattern = render_pattern(request, pattern_template_name)
